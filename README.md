@@ -13,6 +13,14 @@ I built this for fun because I had to create a lot of images for a WooCommerce s
 - File validation and clear skip reasons
 - Client-side only (no uploads)
 
+## Browser Compatibility
+
+VJ Image Optimizer works best on modern browsers with good support for:
+
+- Canvas API (toBlob)
+- createImageBitmap (for performance)
+- Blob & FileReader APIs
+
 ## How it works
 
 The browser loads each image into memory, draws it to a canvas, and re-encodes it to the selected formats. The outputs are generated in-memory and downloaded to your device when you click download.
