@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VJ Image Optimizer</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      window.vjAnalytics = {
+        ga4Id: "",
+        adsId: "",
+      };
+    </script>
+    <script>
+      (function () {
+        const config = window.vjAnalytics || {};
+        const ids = [config.ga4Id, config.adsId].filter(Boolean);
+        if (!ids.length) return;
+        const primaryId = ids[0];
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryId)}`;
+        document.head.appendChild(script);
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+          window.dataLayer.push(arguments);
+        }
+        window.gtag = window.gtag || gtag;
+        gtag("js", new Date());
+        ids.forEach((id) => gtag("config", id));
+      })();
+    </script>
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero reveal">
+        <p class="eyebrow">VJ Tools</p>
+        <h1>VJ Image Optimizer</h1>
+        <p class="subtitle">
+          Convert heavy PNGs into JPG, WEBP, and optimized PNG for the web.
+          All processing runs in your browser. Files are never uploaded or stored.
+        </p>
+      </header>
+
+      <section class="panel reveal" aria-labelledby="files-title">
+        <div class="panel-head">
+          <h2 id="files-title">1. Choose images</h2>
+          <div class="panel-actions">
+            <label class="file-btn" for="fileInput">Select files</label>
+            <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple />
+            <button class="ghost" id="clearBtn" type="button">Clear</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="hint">Tip: drag and drop works. Batch limit 10 files (low-power: 5), 20 MB each. PNG/JPG/WEBP only.</div>
+          <ul id="fileList" class="file-list" aria-live="polite"></ul>
+          <div class="totals">
+            <div>Input total: <span id="inputTotal">0 KB</span></div>
+            <div>Output total: <span id="outputTotal">0 KB</span></div>
+            <div>Saved: <span id="savedTotal">0 KB</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel reveal" aria-labelledby="options-title">
+        <div class="panel-head">
+          <h2 id="options-title">2. Options</h2>
+          <div class="status" id="status">Ready</div>
+        </div>
+        <div class="panel-body">
+          <div id="notice" class="notice"></div>
+          <div class="grid">
+            <div class="option">
+              <label class="option-title">
+                <input id="lowPowerMode" type="checkbox" /> Low-power mode
+              </label>
+              <div class="inline">
+                <span>Smaller batches and lighter processing for older devices.</span>
+              </div>
+            </div>
+            <div class="option">
+              <label class="option-title">Formats</label>
+              <div class="checklist">
+                <label><input type="checkbox" data-format="jpg" checked /> JPG</label>
+                <label><input type="checkbox" data-format="webp" /> WEBP</label>
+                <label><input type="checkbox" data-format="png" /> PNG (lossless)</label>
+            </div>
+            </div>
+            <div class="option">
+            <label class="option-title" for="quality">Quality</label>
+            <div class="inline">
+              <input id="quality" type="range" min="60" max="95" value="85" />
+              <span><strong id="qualityValue">85</strong> (JPG/WEBP only)</span>
+              <span id="qualityLockHint" class="hint lock-hint">Locked by max size</span>
+            </div>
+            </div>
+            <div class="option">
+            <label class="option-title" for="maxKb">
+              <input id="enableMaxKb" type="checkbox" /> Enable max size
+            </label>
+            <div class="inline">
+              <input id="maxKb" type="number" min="10" max="5000" value="500" disabled />
+              <span>KB per image. When enabled, quality auto-adjusts automatically (required) and the quality slider is locked.</span>
+            </div>
+            </div>
+            <div class="option">
+            <label class="option-title">Output</label>
+            <div class="inline">
+              <input id="suffix" type="text" value="" placeholder="optional suffix" />
+              <span>Add a suffix before the extension, for example -web.</span>
+            </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <button id="convertBtn" class="primary" type="button">Convert images</button>
+          <button id="clearDoneBtn" class="ghost" type="button">Clear done</button>
+          <button id="downloadAllBtn" class="ghost" type="button" disabled>Download ZIP</button>
+        </div>
+      </section>
+
+      <section class="panel reveal" aria-labelledby="output-title">
+        <div class="panel-head">
+          <h2 id="output-title">3. Downloads</h2>
+          <div class="hint">Each file is re-encoded without metadata.</div>
+        </div>
+        <div class="panel-body">
+          <div id="outputList" class="output-list"></div>
+        </div>
+      </section>
+
+      <section class="panel reveal" aria-labelledby="faq-title">
+        <div class="panel-head">
+          <h2 id="faq-title">FAQ</h2>
+        </div>
+        <div class="panel-body faq">
+          <details class="faq-item">
+            <summary>How does this work?</summary>
+            <p>
+              Your browser loads the image into memory, draws it on a canvas, and re-encodes it
+              to the selected formats. Files are processed locally and only saved when you
+              download.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Why is this secure?</summary>
+            <p>
+              Images never leave your device. There are no uploads or servers involved, and the
+              app runs entirely client-side.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>JPG</summary>
+            <p>
+              Best for photos. Smaller file sizes with adjustable quality. Not lossless.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>WEBP</summary>
+            <p>
+              Modern format with very good compression. Supported by most modern browsers.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>PNG</summary>
+            <p>
+              Lossless format. Good for graphics and transparency but usually larger files.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Max output size</summary>
+            <p>
+              Enable max size to target a KB limit per image. Quality auto-adjusts automatically to hit the target for JPG/WEBP, and the quality slider locks while it is active.
+            </p>
+          </details>
+          <details class="faq-item">
+            <summary>Low-power mode</summary>
+            <p>
+              Low-power mode is for older or slower devices (for example, 4 GB RAM or less). It limits batch size to 5, reduces the quality search work, and adds small pauses between files to keep the browser responsive.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>Designed by <a href="https://vjranga.com" target="_blank" rel="noopener">vjranga.com</a></div>
+      <div>Copyright © 2026 VJ Image Optimizer. All rights reserved.</div>
+    </footer>
+
+    <script src="vendor/jszip.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
