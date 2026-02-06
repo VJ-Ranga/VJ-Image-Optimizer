@@ -8,6 +8,7 @@ I built this for fun because I had to create a lot of images for a WooCommerce s
 
 - Batch convert images to JPG/WEBP/PNG
 - Optional max output size (KB) with auto quality adjustment
+- In-app prompt to allow lower quality when needed
 - Low-power mode for older devices (one-by-one processing)
 - Local ZIP download for all outputs
 - File validation and clear skip reasons
@@ -36,7 +37,7 @@ The browser loads each image into memory, draws it to a canvas, and re-encodes i
 1. Open `index.html` in your browser.
 2. Select up to 10 images (max 20 MB each).
 3. Choose output formats and quality.
-4. (Optional) Enable max output size for auto-adjusted quality.
+4. (Optional) Enable max output size for auto-adjusted quality. If 40% cannot hit the target, you can allow lower quality down to 20%.
 5. Convert and download individual files or a ZIP.
 
 ## Analytics (optional)
@@ -57,6 +58,7 @@ If both values are empty, no tracking scripts are loaded.
 - Max output size works only for lossy formats (JPG/WEBP).
 - PNG is lossless and will not shrink unless you resize (not used here).
 - Low-power mode processes one image at a time for smoother performance.
+- You can allow lower quality (down to 20%) to reach smaller KB targets.
 
 ## License
 

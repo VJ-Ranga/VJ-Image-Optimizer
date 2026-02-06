@@ -9,7 +9,11 @@ const dom = {
   qualityLockHint: document.getElementById("qualityLockHint"),
   maxKb: document.getElementById("maxKb"),
   enableMaxKb: document.getElementById("enableMaxKb"),
+  allowLowerQuality: document.getElementById("allowLowerQuality"),
   lowPowerMode: document.getElementById("lowPowerMode"),
+  qualityModal: document.getElementById("qualityModal"),
+  qualityModalAllow: document.getElementById("qualityModalAllow"),
+  qualityModalCancel: document.getElementById("qualityModalCancel"),
   suffix: document.getElementById("suffix"),
   convertBtn: document.getElementById("convertBtn"),
   clearDoneBtn: document.getElementById("clearDoneBtn"),
@@ -56,6 +60,7 @@ function init() {
   });
   dom.enableMaxKb.addEventListener("change", syncMaxSizeState);
   dom.lowPowerMode.addEventListener("change", applyLowPowerMode);
+  setupQualityModal();
   dom.convertBtn.addEventListener("click", convertAll);
   dom.clearDoneBtn.addEventListener("click", clearDone);
   dom.downloadAllBtn.addEventListener("click", downloadAll);
@@ -283,9 +288,11 @@ async function convertAll() {
   const quality = Number(dom.quality.value) / 100;
   const maxKb = dom.enableMaxKb.checked ? Number(dom.maxKb.value) || 0 : 0;
   const autoQuality = dom.enableMaxKb.checked;
+  let minQuality = dom.enableMaxKb.checked && dom.allowLowerQuality.checked ? 0.2 : 0.4;
   const qualityIterations = getQualityIterations();
   const lowPowerEnabled = isLowPowerEnabled();
   const suffix = (dom.suffix.value || "").trim();
+  let askedLowerQuality = false;
 
   let index = 0;
   for (const file of state.files) {
@@ -309,8 +316,32 @@ async function convertAll() {
           format.mime,
           maxKb * 1024,
           quality,
-          qualityIterations
+          qualityIterations,
+          minQuality
         );
+        if (blobData.hitTarget === false && minQuality > 0.2 && !dom.allowLowerQuality.checked) {
+          if (!askedLowerQuality) {
+            askedLowerQuality = true;
+            const allow = await requestLowerQuality();
+            if (allow) {
+              dom.allowLowerQuality.checked = true;
+              minQuality = 0.2;
+            }
+          }
+          if (dom.allowLowerQuality.checked) {
+            blobData = await encodeWithTarget(
+              outputCanvas,
+              format.mime,
+              maxKb * 1024,
+              quality,
+              qualityIterations,
+              minQuality
+            );
+          }
+        }
+        if (blobData.hitTarget === false && minQuality <= 0.2) {
+          setStatus(`Target not reached for ${file.name} at 20% quality.`);
+        }
       } else {
         const blob = await canvasToBlob(outputCanvas, format.mime, format.lossy ? quality : undefined);
         blobData = { blob, quality: format.lossy ? quality : null, hitTarget: true };
@@ -356,8 +387,7 @@ function addOutputCard(item) {
   const meta = document.createElement("div");
   meta.className = "meta";
   const qualityText = item.quality ? `q:${Math.round(item.quality * 100)}` : "lossless";
-  const targetText = item.hitTarget === false ? "target not reached" : "";
-  meta.textContent = `${item.width}x${item.height} | ${formatBytes(item.size)} | ${qualityText}${targetText ? ` | ${targetText}` : ""} | from ${item.source}`;
+  meta.textContent = `${item.width}x${item.height} | ${formatBytes(item.size)} | ${qualityText} | from ${item.source}`;
 
   const button = document.createElement("button");
   button.className = "ghost";
@@ -462,8 +492,14 @@ function canvasToBlob(canvas, type, quality) {
   });
 }
 
-async function encodeWithTarget(canvas, type, maxBytes, maxQuality, iterations = QUALITY_STEPS_NORMAL) {
-  const minQuality = 0.4;
+async function encodeWithTarget(
+  canvas,
+  type,
+  maxBytes,
+  maxQuality,
+  iterations = QUALITY_STEPS_NORMAL,
+  minQuality = 0.4
+) {
   const upper = Math.min(0.95, Math.max(minQuality, maxQuality));
   let low = minQuality;
   let high = upper;
@@ -622,6 +658,39 @@ function runCapabilityCheck() {
   setNotice(warnings.join(" "));
 }
 
+function setupQualityModal() {
+  if (!dom.qualityModal) return;
+  dom.qualityModalAllow.addEventListener("click", () => closeQualityModal(true));
+  dom.qualityModalCancel.addEventListener("click", () => closeQualityModal(false));
+  dom.qualityModal.querySelector("[data-close]").addEventListener("click", () => {
+    closeQualityModal(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && dom.qualityModal.classList.contains("active")) {
+      closeQualityModal(false);
+    }
+  });
+}
+
+function requestLowerQuality() {
+  if (!dom.qualityModal) return Promise.resolve(false);
+  dom.qualityModal.classList.add("active");
+  dom.qualityModal.setAttribute("aria-hidden", "false");
+  return new Promise((resolve) => {
+    dom.qualityModal.dataset.resolve = "1";
+    dom.qualityModal._resolve = resolve;
+  });
+}
+
+function closeQualityModal(allow) {
+  if (!dom.qualityModal || !dom.qualityModal._resolve) return;
+  const resolve = dom.qualityModal._resolve;
+  dom.qualityModal._resolve = null;
+  dom.qualityModal.classList.remove("active");
+  dom.qualityModal.setAttribute("aria-hidden", "true");
+  resolve(Boolean(allow));
+}
+
 function nextFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
@@ -634,5 +703,6 @@ function syncMaxSizeState() {
   const enabled = dom.enableMaxKb.checked;
   dom.maxKb.disabled = !enabled;
   dom.quality.disabled = enabled;
+  dom.allowLowerQuality.disabled = !enabled;
   dom.qualityLockHint.style.display = enabled ? "block" : "none";
 }

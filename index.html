@@ -75,7 +75,7 @@
                 <input id="lowPowerMode" type="checkbox" /> Low-power mode
               </label>
               <div class="inline">
-                <span>Smaller batches and lighter processing for older devices.</span>
+                <span class="option-note">Smaller batches and lighter processing for older devices.</span>
               </div>
             </div>
             <div class="option">
@@ -100,7 +100,10 @@
             </label>
             <div class="inline">
               <input id="maxKb" type="number" min="10" max="5000" value="500" disabled />
-              <span>KB per image. When enabled, quality auto-adjusts automatically (required) and the quality slider is locked.</span>
+              <label class="toggle">
+                <input id="allowLowerQuality" type="checkbox" disabled /> Allow lower quality (down to 20%)
+              </label>
+              <span class="option-note">Target KB per image. Auto-adjusts quality (required) and locks the quality slider.</span>
             </div>
             </div>
             <div class="option">
@@ -170,7 +173,7 @@
           <details class="faq-item">
             <summary>Max output size</summary>
             <p>
-              Enable max size to target a KB limit per image. Quality auto-adjusts automatically to hit the target for JPG/WEBP, and the quality slider locks while it is active.
+              Targets a KB limit per image for JPG/WEBP. If 40% cannot hit the target, you can allow lower quality down to 20%.
             </p>
           </details>
           <details class="faq-item">
@@ -182,6 +185,20 @@
         </div>
       </section>
     </main>
+
+    <div id="qualityModal" class="modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close="true"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="qualityModalTitle">
+        <h3 id="qualityModalTitle">Lower quality to hit target?</h3>
+        <p>
+          We could not reach your max KB target at 40% quality. Allow lowering to 20%?
+        </p>
+        <div class="modal-actions">
+          <button id="qualityModalAllow" class="primary" type="button">Allow lower quality</button>
+          <button id="qualityModalCancel" class="ghost" type="button">Keep 40%</button>
+        </div>
+      </div>
+    </div>
 
     <footer class="footer">
       <div>Designed by <a href="https://vjranga.com" target="_blank" rel="noopener">vjranga.com</a></div>
