@@ -8,7 +8,7 @@ I built this for fun because I had to create a lot of images for a WooCommerce s
 
 - Batch convert images to JPG/WEBP/PNG
 - Optional max output size (KB) with auto quality adjustment
-- Low-power mode for older devices
+- Low-power mode for older devices (one-by-one processing)
 - Local ZIP download for all outputs
 - File validation and clear skip reasons
 - Client-side only (no uploads)
@@ -56,6 +56,7 @@ If both values are empty, no tracking scripts are loaded.
 
 - Max output size works only for lossy formats (JPG/WEBP).
 - PNG is lossless and will not shrink unless you resize (not used here).
+- Low-power mode processes one image at a time for smoother performance.
 
 ## License
 

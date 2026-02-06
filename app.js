@@ -27,7 +27,7 @@ const formatDefs = {
 };
 
 const MAX_FILES = 10;
-const LOW_POWER_BATCH_LIMIT = 5;
+const LOW_POWER_BATCH_LIMIT = 1;
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const QUALITY_STEPS_NORMAL = 7;
@@ -181,7 +181,7 @@ function renderFileList() {
   if (!state.files.length && !state.rejected.length) {
     const empty = document.createElement("li");
     empty.className = "file-item";
-    empty.textContent = "No files selected. Batch limit 10 (low-power: 5), 20 MB each.";
+    empty.textContent = "No files selected. Batch limit 10 (low-power: 1), 20 MB each.";
     dom.fileList.appendChild(empty);
     return;
   }
