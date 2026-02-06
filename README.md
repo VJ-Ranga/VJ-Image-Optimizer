@@ -4,6 +4,10 @@ VJ Image Optimizer is a small, client-side tool to convert heavy PNGs into JPG, 
 
 I built this for fun because I had to create a lot of images for a WooCommerce store. I wanted something fast and easy for me and my friends, so I'm sharing it in case it helps anyone.
 
+## Live Project
+
+https://image-optimizer.vjranga.com/
+
 ## Features
 
 - Batch convert images to JPG/WEBP/PNG
