@@ -42,16 +42,19 @@ The browser loads each image into memory, draws it to a canvas, and re-encodes i
 
 ## Analytics (optional)
 
-This tool supports Google Analytics and Google Ads. To enable them, open `index.html` and set the IDs in:
+This tool supports Google Analytics. To enable it, open `index.html` and set the ID in:
 
 ```
 window.vjAnalytics = {
   ga4Id: "G-XXXXXXX",
-  adsId: "AW-XXXXXXX",
 };
 ```
 
-If both values are empty, no tracking scripts are loaded.
+If the value is empty, no tracking scripts are loaded.
+
+## AdSense (optional)
+
+Add your AdSense or Auto Ads code manually in `index.html` where the ADS comments are placed.
 
 ## Notes
 

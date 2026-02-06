@@ -7,19 +7,17 @@
     <link rel="stylesheet" href="styles.css" />
     <script>
       window.vjAnalytics = {
-        ga4Id: "",
-        adsId: "",
+        ga4Id: "G-XXXXXXX",
       };
     </script>
     <script>
       (function () {
         const config = window.vjAnalytics || {};
-        const ids = [config.ga4Id, config.adsId].filter(Boolean);
-        if (!ids.length) return;
-        const primaryId = ids[0];
+        const id = config.ga4Id;
+        if (!id) return;
         const script = document.createElement("script");
         script.async = true;
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryId)}`;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
         document.head.appendChild(script);
         window.dataLayer = window.dataLayer || [];
         function gtag() {
@@ -27,7 +25,7 @@
         }
         window.gtag = window.gtag || gtag;
         gtag("js", new Date());
-        ids.forEach((id) => gtag("config", id));
+        gtag("config", id);
       })();
     </script>
   </head>
@@ -185,6 +183,10 @@
         </div>
       </section>
     </main>
+
+    <!-- ADS: Add AdSense or Auto Ads here -->
+    <!-- Example: <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXX" crossorigin="anonymous"></script> -->
+    <!-- Example: <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXX" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
 
     <div id="qualityModal" class="modal" aria-hidden="true">
       <div class="modal-backdrop" data-close="true"></div>
